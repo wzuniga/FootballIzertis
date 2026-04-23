@@ -47,11 +47,13 @@ public class ClubService {
     }
 
     /**
-     * Returns the list of all publicly visible clubs.
-     * Username, password, and player list are excluded in the mapper.
+     * Returns the list of publicly visible clubs, optionally filtered by name and federation.
+     *
+     * @param name       partial match against officialName or popularName (optional)
+     * @param federation exact match against federation acronym (optional)
      */
-    public List<ClubSummaryResponse> getPublicClubs() {
-        return clubRepository.findAllByPublicVisibleTrue().stream()
+    public List<ClubSummaryResponse> getPublicClubs(String name, String federation) {
+        return clubRepository.searchPublicClubs(name, federation).stream()
                 .map(clubMapper::toSummaryResponse)
                 .toList();
     }

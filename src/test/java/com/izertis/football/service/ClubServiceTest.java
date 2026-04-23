@@ -98,10 +98,10 @@ class ClubServiceTest {
     @DisplayName("getPublicClubs: returns only public clubs")
     void getPublicClubs_returnsPublicOnly() {
         ClubSummaryResponse summary = new ClubSummaryResponse();
-        when(clubRepository.findAllByPublicVisibleTrue()).thenReturn(List.of(publicClub));
+        when(clubRepository.searchPublicClubs(null, null)).thenReturn(List.of(publicClub));
         when(clubMapper.toSummaryResponse(publicClub)).thenReturn(summary);
 
-        List<ClubSummaryResponse> result = clubService.getPublicClubs();
+        List<ClubSummaryResponse> result = clubService.getPublicClubs(null, null);
 
         assertThat(result).containsExactly(summary);
     }

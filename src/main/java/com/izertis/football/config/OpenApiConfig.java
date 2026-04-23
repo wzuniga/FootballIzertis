@@ -7,6 +7,7 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.filter.ShallowEtagHeaderFilter;
 
 /**
  * OpenAPI 3.0 configuration.
@@ -19,6 +20,16 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class OpenApiConfig {
+
+    /**
+     * Enables shallow ETag support. The filter computes an MD5 hash of the response body
+     * and returns 304 Not Modified when the client sends a matching If-None-Match header,
+     * avoiding unnecessary payload transfer.
+     */
+    @Bean
+    public ShallowEtagHeaderFilter shallowEtagHeaderFilter() {
+        return new ShallowEtagHeaderFilter();
+    }
 
     @Bean
     public OpenAPI footballConfederationOpenAPI() {

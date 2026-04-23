@@ -2,7 +2,23 @@
 
 REST API built with **Java 21 + Spring Boot 3** that allows a Football Confederation to manage club registrations and their federated players.
 
+> **Live on AWS EC2:** http://98.87.156.14:8080/swagger-ui.html  
+> Note: served over **HTTP** (no HTTPS). For testing purposes only.
+
 > **Database:** This project uses **H2 in-memory** to simplify setup and testing — no external database required. Since it uses standard JPA/Hibernate, it is compatible with any relational database (PostgreSQL, MySQL, etc.) with minimal configuration changes. See the sections below for execution details.
+
+> **Extra features:** Some additional improvements beyond the base requirements were implemented. See [Extra Features Implemented](#extra-features-implemented) at the end of this document for details.
+
+---
+
+## Important URLs (AWS EC2)
+
+| Description | URL |
+|---|---|
+| API Base | http://98.87.156.14:8080 |
+| Swagger UI | http://98.87.156.14:8080/swagger-ui.html |
+| OpenAPI JSON | http://98.87.156.14:8080/api-docs |
+| H2 Console | http://98.87.156.14:8080/h2-console |
 
 ---
 
@@ -223,3 +239,48 @@ Interactive API documentation is available while the application is running:
 2. Click the **Authorize 🔒** button at the top of the page.
 3. Enter `Bearer <your-token>` and click **Authorize**.
 4. All subsequent calls will include the token automatically.
+
+---
+
+## Extra Features Implemented
+
+### Search / Filtering
+
+**Clubs** — optional query parameters on `GET /club`:
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `name` | string | Partial, case-insensitive match on `officialName` or `popularName` |
+| `federation` | string | Exact, case-insensitive match on federation acronym |
+
+Examples:
+```
+GET http://98.87.156.14:8080/club
+GET http://98.87.156.14:8080/club?name=town
+GET http://98.87.156.14:8080/club?federation=UEFA
+GET http://98.87.156.14:8080/club?name=city&federation=UEFA
+```
+
+---
+
+**Players** — optional query parameters on `GET /club/{clubId}/player`:
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `name` | string | Partial, case-insensitive match on `givenName` or `familyName` |
+| `nationality` | string | Exact, case-insensitive match on nationality |
+
+Examples:
+```
+GET http://98.87.156.14:8080/club/{clubId}/player
+GET http://98.87.156.14:8080/club/{clubId}/player?name=john
+GET http://98.87.156.14:8080/club/{clubId}/player?nationality=English
+GET http://98.87.156.14:8080/club/{clubId}/player?name=doe&nationality=Spanish
+```
+
+---
+
+### Traffic Optimization
+
+- **Gzip compression** — enabled for JSON responses ≥ 1 KB. Clients that send `Accept-Encoding: gzip` receive compressed payloads, reducing bandwidth.
+- **ETag / `304 Not Modified`** — the server computes a hash of each response. If the client sends the same `If-None-Match` header on a repeat request and the data has not changed, the server returns `304` with no body, avoiding redundant data transfer.

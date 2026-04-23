@@ -69,8 +69,9 @@ public class PlayerController {
 
     @GetMapping
     @Operation(summary = "List players of a club",
-               description = "Returns id, givenName and familyName only. " +
-                             "For private clubs only the owning club may access this list.")
+               description = "Returns id, givenName and familyName only. "
+                             + "Optionally filter by name (partial) and/or nationality (exact). "
+                             + "For private clubs only the owning club may access this list.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Player list"),
             @ApiResponse(responseCode = "403", description = "Access denied",
@@ -79,9 +80,13 @@ public class PlayerController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public ResponseEntity<List<PlayerSummaryResponse>> listPlayers(
-            @Parameter(description = "UUID of the club") @PathVariable UUID clubId) {
+            @Parameter(description = "UUID of the club") @PathVariable UUID clubId,
+            @Parameter(description = "Filter by name (partial match on givenName or familyName)")
+            @RequestParam(required = false) String name,
+            @Parameter(description = "Filter by nationality (exact match, case-insensitive)")
+            @RequestParam(required = false) String nationality) {
         UUID requestingClubId = currentClubResolver.getCurrentClubId();
-        return ResponseEntity.ok(playerService.listPlayers(clubId, requestingClubId));
+        return ResponseEntity.ok(playerService.listPlayers(clubId, requestingClubId, name, nationality));
     }
 
     // -------------------------------------------------------------------------

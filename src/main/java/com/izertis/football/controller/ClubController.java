@@ -67,14 +67,18 @@ public class ClubController {
     @GetMapping
     @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "List all public Football Clubs",
-               description = "Returns clubs with public=true. Username, password and player count are not included.")
+               description = "Returns clubs with public=true. Optionally filter by name (partial, case-insensitive) and/or federation (exact, case-insensitive).")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "List of public clubs"),
             @ApiResponse(responseCode = "401", description = "Missing or invalid token",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    public ResponseEntity<List<ClubSummaryResponse>> listPublicClubs() {
-        return ResponseEntity.ok(clubService.getPublicClubs());
+    public ResponseEntity<List<ClubSummaryResponse>> listPublicClubs(
+            @Parameter(description = "Filter by name (partial match on officialName or popularName)")
+            @RequestParam(required = false) String name,
+            @Parameter(description = "Filter by federation acronym (exact match, e.g. UEFA)")
+            @RequestParam(required = false) String federation) {
+        return ResponseEntity.ok(clubService.getPublicClubs(name, federation));
     }
 
     // -------------------------------------------------------------------------

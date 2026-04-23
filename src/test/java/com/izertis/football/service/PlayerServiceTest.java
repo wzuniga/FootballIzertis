@@ -109,10 +109,10 @@ class PlayerServiceTest {
     void listPlayers_publicClub_anyUser() {
         PlayerSummaryResponse summary = new PlayerSummaryResponse();
         when(clubService.findClubOrThrow(ownerClubId)).thenReturn(ownerClub);
-        when(playerRepository.findAllByClubId(ownerClubId)).thenReturn(List.of(player));
+        when(playerRepository.searchByClub(ownerClubId, null, null)).thenReturn(List.of(player));
         when(playerMapper.toSummaryResponse(player)).thenReturn(summary);
 
-        List<PlayerSummaryResponse> result = playerService.listPlayers(ownerClubId, unknownId);
+        List<PlayerSummaryResponse> result = playerService.listPlayers(ownerClubId, unknownId, null, null);
 
         assertThat(result).containsExactly(summary);
     }
@@ -122,7 +122,7 @@ class PlayerServiceTest {
     void listPlayers_privateClub_throwsForNonOwner() {
         when(clubService.findClubOrThrow(otherClubId)).thenReturn(otherClub);
 
-        assertThatThrownBy(() -> playerService.listPlayers(otherClubId, ownerClubId))
+        assertThatThrownBy(() -> playerService.listPlayers(otherClubId, ownerClubId, null, null))
                 .isInstanceOf(AccessDeniedException.class);
     }
 

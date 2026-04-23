@@ -48,14 +48,18 @@ public class PlayerService {
     }
 
     /**
-     * Lists the players of a club.
+     * Lists the players of a club, optionally filtered by name and nationality.
      * Access rules: public club → any authenticated user; private club → owner only.
+     *
+     * @param name        partial match against givenName or familyName (optional)
+     * @param nationality exact match against nationality (optional)
      */
-    public List<PlayerSummaryResponse> listPlayers(UUID clubId, UUID requestingClubId) {
+    public List<PlayerSummaryResponse> listPlayers(UUID clubId, UUID requestingClubId,
+                                                    String name, String nationality) {
         Club club = clubService.findClubOrThrow(clubId);
         assertReadAccess(club, requestingClubId);
 
-        return playerRepository.findAllByClubId(clubId).stream()
+        return playerRepository.searchByClub(clubId, name, nationality).stream()
                 .map(playerMapper::toSummaryResponse)
                 .toList();
     }
