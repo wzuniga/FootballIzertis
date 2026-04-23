@@ -15,7 +15,7 @@ REST API built with **Java 21 + Spring Boot 3** that allows a Football Confedera
 - [Running Locally (H2 – zero config)](#running-locally-h2--zero-config)
 - [Running with Docker (H2)](#running-with-docker-h2)
 - [Running Tests](#running-tests)
-- [Deploying to Production](#deploying-to-production)
+- [Execute Options](#execute-options)
 - [Environment Variables](#environment-variables)
 - [Swagger / OpenAPI](#swagger--openapi)
 
@@ -127,7 +127,8 @@ mvn spring-boot:run
 The API starts on **http://localhost:8080**.
 
 > **H2 Console** is available at http://localhost:8080/h2-console  
-> JDBC URL: `jdbc:h2:mem:footballdb` | User: `sa` | Password: *(empty)*
+> **Important:** the JDBC URL field defaults to `jdbc:h2:~/test` — change it manually to `jdbc:h2:mem:footballdb`  
+> User: `sa` | Password: *(empty)*
 
 ---
 
@@ -176,7 +177,7 @@ Test coverage includes:
 
 ---
 
-## Deploying to Production
+## Execute Options
 
 ### Option A – Plain JAR on a server
 
